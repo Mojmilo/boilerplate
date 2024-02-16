@@ -3,6 +3,8 @@ import {PrismaAdapter} from "@auth/prisma-adapter";
 import prisma from "@/lib/db";
 import GithubProvider from "next-auth/providers/github"
 import CredentialsProvider from "next-auth/providers/credentials";
+import {loginSchema} from "@/lib/definitions";
+import bcrypt from 'bcrypt';
 
 const githubId = process.env.GITHUB_ID;
 const githubSecret = process.env.GITHUB_SECRET;
@@ -23,18 +25,43 @@ export const authConfig = {
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials, req) {
+                const parsedCredentials = loginSchema.safeParse(credentials);
+
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+                // return null;
+
+                if (parsedCredentials.success) {
+                    const { email, password } = parsedCredentials.data;
+                    const user = await prisma.user.findUnique({
+                        where: {
+                            email,
+                        },
+                    });
+                    if (!user || !user.password) return null;
+                    /*const passwordsMatch = await bcrypt.compare(password, user.password);
+
+                    if (passwordsMatch) return user;*/
+                    return user;
+                }
+
                 return null;
             }
         }),
     ],
-    callbacks: {
+    /*callbacks: {
         async session({ session, user }) {
-            if (session.user) {
-                session.user.id = user.id;
+            if (user) {
+                if (session.user) {
+                    session.user.id = user.id;
+                }
             }
 
             return session;
         }
+    },*/
+    secret: process.env.NEXTAUTH_SECRET,
+    session: {
+        strategy: "jwt",
     },
     adapter: PrismaAdapter(prisma) as any,
 } satisfies NextAuthOptions;

@@ -8,8 +8,12 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {LoginSchema, loginSchema} from "@/lib/definitions";
 import {signIn} from "next-auth/react";
+import {useTransition} from "react";
+import {Icons} from "@/components/icons";
 
 export default function LoginForm() {
+    const [isPending, startTransition] = useTransition();
+
     const form = useForm<LoginSchema>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
@@ -19,9 +23,12 @@ export default function LoginForm() {
     })
 
     async function onSubmit(values: LoginSchema) {
-        console.log(values);
-
-        // await signIn();
+        startTransition(async () => {
+            await signIn('credentials', {
+                email: values.email,
+                password: values.password,
+            });
+        });
     }
 
     return (
@@ -36,9 +43,6 @@ export default function LoginForm() {
                             <FormControl>
                                 <Input placeholder="shadcn" {...field} />
                             </FormControl>
-                            <FormDescription>
-                                This is your public display name.
-                            </FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -52,14 +56,14 @@ export default function LoginForm() {
                             <FormControl>
                                 <Input placeholder="shadcn" type={'password'} {...field} />
                             </FormControl>
-                            <FormDescription>
-                                This is your public display name.
-                            </FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <Button>Submit</Button>
+                <Button disabled={isPending} className="w-full">
+                    {isPending && <Icons.spinner className="animate-spin w-5 h-5 mr-3" />}
+                    Submit
+                </Button>
             </form>
         </Form>
     )
