@@ -9,7 +9,6 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {RegisterSchema, registerSchema} from "@/lib/definitions";
 import {useTransition} from "react";
 import {Icons} from "@/components/icons";
-import {signIn} from "next-auth/react";
 import {register} from "@/lib/actions";
 
 export default function RegisterForm() {
@@ -26,12 +25,12 @@ export default function RegisterForm() {
 
     function onSubmit(values: RegisterSchema) {
         startTransition(async () => {
-            const user = await register(values);
+            const res = await register(values);
 
-            if (user) {
-                await signIn('credentials', {
-                    email: values.email,
-                    password: values.password,
+            if (res) {
+                form.setError('email', {
+                    type: 'manual',
+                    message: res,
                 });
             }
         });

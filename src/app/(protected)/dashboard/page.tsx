@@ -1,4 +1,4 @@
-import {getRequiredAuthSession} from "@/lib/auth";
+import {getRequiredAuthSession} from "@/auth";
 import LogoutButton from "@/components/logout-button";
 
 export default async function Page() {

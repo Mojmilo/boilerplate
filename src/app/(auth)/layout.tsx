@@ -1,4 +1,4 @@
-import {getAuthSession} from "@/lib/auth";
+import {getAuthSession} from "@/auth";
 import {redirect} from "next/navigation";
 
 export default async function Layout({ children }: Readonly<{ children: React.ReactNode }>) {

@@ -10,6 +10,7 @@ import {LoginSchema, loginSchema} from "@/lib/definitions";
 import {signIn} from "next-auth/react";
 import {useTransition} from "react";
 import {Icons} from "@/components/icons";
+import {authenticate} from "@/lib/actions";
 
 export default function LoginForm() {
     const [isPending, startTransition] = useTransition();
@@ -24,21 +25,13 @@ export default function LoginForm() {
 
     async function onSubmit(values: LoginSchema) {
         startTransition(async () => {
-            const res = await signIn('credentials', {
-                email: values.email,
-                password: values.password,
-                redirect: false,
-            });
+            const res = await authenticate(values);
 
-            if (res?.error) {
+            if (res) {
                 form.setError('email', {
                     type: 'manual',
-                    message: res.error,
+                    message: res,
                 });
-            }
-
-            if (res?.ok) {
-                window.location.reload();
             }
         });
     }
