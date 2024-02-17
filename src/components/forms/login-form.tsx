@@ -24,10 +24,22 @@ export default function LoginForm() {
 
     async function onSubmit(values: LoginSchema) {
         startTransition(async () => {
-            await signIn('credentials', {
+            const res = await signIn('credentials', {
                 email: values.email,
                 password: values.password,
+                redirect: false,
             });
+
+            if (res?.error) {
+                form.setError('email', {
+                    type: 'manual',
+                    message: res.error,
+                });
+            }
+
+            if (res?.ok) {
+                window.location.reload();
+            }
         });
     }
 
@@ -62,7 +74,7 @@ export default function LoginForm() {
                 />
                 <Button disabled={isPending} className="w-full">
                     {isPending && <Icons.spinner className="animate-spin w-5 h-5 mr-3" />}
-                    Submit
+                    Login
                 </Button>
             </form>
         </Form>

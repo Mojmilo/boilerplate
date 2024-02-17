@@ -14,12 +14,16 @@ if (!githubId || !githubSecret) {
 }
 
 export const authConfig = {
+    pages: {
+        signIn: "/login",
+    },
     providers: [
         GithubProvider({
             clientId: githubId,
             clientSecret: githubSecret,
         }),
         CredentialsProvider({
+            id: "credentials",
             credentials: {
                 email: { label: "Email", type: "email" },
                 password: { label: "Password", type: "password" },
@@ -28,7 +32,6 @@ export const authConfig = {
                 const parsedCredentials = loginSchema.safeParse(credentials);
 
                 await new Promise((resolve) => setTimeout(resolve, 1000));
-                // return null;
 
                 if (parsedCredentials.success) {
                     const { email, password } = parsedCredentials.data;
@@ -38,10 +41,9 @@ export const authConfig = {
                         },
                     });
                     if (!user || !user.password) return null;
-                    /*const passwordsMatch = await bcrypt.compare(password, user.password);
+                    const passwordsMatch = await bcrypt.compare(password, user.password);
 
-                    if (passwordsMatch) return user;*/
-                    return user;
+                    if (passwordsMatch) return user;
                 }
 
                 return null;

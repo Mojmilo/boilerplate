@@ -7,8 +7,14 @@ import {z} from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {RegisterSchema, registerSchema} from "@/lib/definitions";
+import {useTransition} from "react";
+import {Icons} from "@/components/icons";
+import {signIn} from "next-auth/react";
+import {register} from "@/lib/actions";
 
 export default function RegisterForm() {
+    const [isPending, startTransition] = useTransition();
+
     const form = useForm<RegisterSchema>({
         resolver: zodResolver(registerSchema),
         defaultValues: {
@@ -19,7 +25,16 @@ export default function RegisterForm() {
     })
 
     function onSubmit(values: RegisterSchema) {
-        console.log(values)
+        startTransition(async () => {
+            const user = await register(values);
+
+            if (user) {
+                await signIn('credentials', {
+                    email: values.email,
+                    password: values.password,
+                });
+            }
+        });
     }
 
     return (
@@ -34,9 +49,6 @@ export default function RegisterForm() {
                             <FormControl>
                                 <Input placeholder="shadcn" {...field} />
                             </FormControl>
-                            <FormDescription>
-                                This is your public display name.
-                            </FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -50,9 +62,6 @@ export default function RegisterForm() {
                             <FormControl>
                                 <Input placeholder="shadcn" type={'password'} {...field} />
                             </FormControl>
-                            <FormDescription>
-                                This is your public display name.
-                            </FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -66,14 +75,14 @@ export default function RegisterForm() {
                             <FormControl>
                                 <Input placeholder="shadcn" type={'password'} {...field} />
                             </FormControl>
-                            <FormDescription>
-                                This is your public display name.
-                            </FormDescription>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <Button>Submit</Button>
+                <Button disabled={isPending} className="w-full">
+                    {isPending && <Icons.spinner className="animate-spin w-5 h-5 mr-3" />}
+                    Create account
+                </Button>
             </form>
         </Form>
     )

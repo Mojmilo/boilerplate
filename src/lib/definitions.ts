@@ -20,5 +20,10 @@ export const registerSchema = z.object({
     confirmPassword: z.string().min(8, {
         message: "Your password must be at least 8 characters long.",
     }),
+}).refine((values) => {
+    return values.password === values.confirmPassword;
+}, {
+    message: "Your passwords do not match.",
+    path: ["confirmPassword"],
 });
 export type RegisterSchema = z.infer<typeof registerSchema>;

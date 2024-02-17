@@ -7,6 +7,8 @@ export default async function Layout({ children }: Readonly<{ children: React.Re
     if (session) redirect("/dashboard");
 
     return (
-        <>{children}</>
+        <main className="flex min-h-screen flex-col items-center justify-between p-24">
+            {children}
+        </main>
     );
 }
