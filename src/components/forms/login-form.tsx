@@ -6,11 +6,11 @@ import {Input} from "@/components/ui/input";
 import {z} from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {LoginSchema, loginSchema} from "@/lib/definitions";
+import {LoginSchema, loginSchema} from "@/schemas/auth";
 import {signIn} from "next-auth/react";
 import {useTransition} from "react";
 import {Icons} from "@/components/icons";
-import {authenticate} from "@/lib/actions";
+import {authenticate} from "@/actions/auth";
 
 export default function LoginForm() {
     const [isPending, startTransition] = useTransition();
@@ -28,7 +28,7 @@ export default function LoginForm() {
             const res = await authenticate(values);
 
             if (res) {
-                form.setError('email', {
+                form.setError('root', {
                     type: 'manual',
                     message: res,
                 });
@@ -38,6 +38,9 @@ export default function LoginForm() {
 
     return (
         <Form {...form}>
+            {form.formState.errors.root && (
+                <span className={'text-sm font-medium text-destructive'}>{form.formState.errors.root?.message}</span>
+            )}
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <FormField
                     control={form.control}

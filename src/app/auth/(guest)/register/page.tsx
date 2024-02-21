@@ -7,7 +7,7 @@ import {Button} from "@/components/ui/button";
 
 export default function Page() {
   return (
-      <Card className={'w-[450px]'}>
+      <Card className={'w-full sm:w-[450px]'}>
           <CardHeader className="space-y-1">
               <CardTitle className="text-2xl">Create an account</CardTitle>
               <CardDescription>
@@ -30,7 +30,7 @@ export default function Page() {
           </CardContent>
           <CardFooter>
               <div className="flex flex-row justify-center items-center w-full">
-                  <Link href="/login">
+                  <Link href="/auth/login">
                       <Button variant="link" className="h-0 px-0 py-0 text-sm text-muted-foreground font-light">
                           Already have an account?
                       </Button>

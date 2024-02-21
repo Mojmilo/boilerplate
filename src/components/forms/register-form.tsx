@@ -6,10 +6,12 @@ import {Input} from "@/components/ui/input";
 import {z} from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {RegisterSchema, registerSchema} from "@/lib/definitions";
-import {useTransition} from "react";
+import {RegisterSchema, registerSchema} from "@/schemas/auth";
+import {useEffect, useTransition} from "react";
 import {Icons} from "@/components/icons";
-import {register} from "@/lib/actions";
+import {register} from "@/actions/auth";
+import zxcvbn from "zxcvbn";
+import PasswordStrength from "@/components/password-strenght";
 
 export default function RegisterForm() {
     const [isPending, startTransition] = useTransition();
@@ -28,7 +30,7 @@ export default function RegisterForm() {
             const res = await register(values);
 
             if (res) {
-                form.setError('email', {
+                form.setError('root', {
                     type: 'manual',
                     message: res,
                 });
@@ -38,6 +40,9 @@ export default function RegisterForm() {
 
     return (
         <Form {...form}>
+            {form.formState.errors.root && (
+                <span className={'text-sm font-medium text-destructive'}>{form.formState.errors.root?.message}</span>
+            )}
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <FormField
                     control={form.control}
@@ -52,19 +57,22 @@ export default function RegisterForm() {
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Password</FormLabel>
-                            <FormControl>
-                                <Input placeholder="shadcn" type={'password'} {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                <div className={'space-y-2'}>
+                    <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Password</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="shadcn" type={'password'} {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <PasswordStrength password={form.watch('password')} />
+                </div>
                 <FormField
                     control={form.control}
                     name="confirmPassword"

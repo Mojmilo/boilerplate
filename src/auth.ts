@@ -10,37 +10,21 @@ export const {
     signOut,
 } = NextAuth({
     pages: {
-        signIn: "/login",
+        signIn: "/auth/login",
     },
     ...authConfig,
-    /*callbacks: {
-        async session({ session, user }) {
-            if (user) {
-                if (session.user) {
-                    session.user.id = user.id;
-                }
+    callbacks: {
+        async session({ token, session }) {
+            if (token.sub && session.user) {
+                session.user.id = token.sub;
             }
 
             return session;
         }
-    },*/
+    },
     secret: process.env.NEXTAUTH_SECRET,
     session: {
         strategy: "jwt",
     },
     adapter: PrismaAdapter(prisma) as any,
-})
-
-export const getAuthSession = () => {
-    return auth();
-}
-
-export const getRequiredAuthSession = async () => {
-    const session = await getAuthSession();
-
-    if (!session?.user) {
-        throw new Error("Not authenticated");
-    }
-
-    return session;
-}
+});

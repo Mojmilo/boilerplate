@@ -2,7 +2,7 @@
 
 import {Button} from "@/components/ui/button";
 import {Icons} from "@/components/icons";
-import {authenticateGithub} from "@/lib/actions";
+import {authenticateGithub} from "@/actions/auth";
 
 export default function OAuthForm() {
     return (

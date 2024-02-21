@@ -1,9 +1,10 @@
 import {NextAuthConfig} from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
-import {loginSchema} from "@/lib/definitions";
+import {loginSchema} from "@/schemas/auth";
 import prisma from "@/lib/db";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
+import {getUserByEmail} from "@/data/user";
 
 const githubId = process.env.GITHUB_ID;
 const githubSecret = process.env.GITHUB_SECRET;
@@ -30,16 +31,11 @@ export default {
 
                 if (parsedCredentials.success) {
                     const { email, password } = parsedCredentials.data;
-                    const user = await prisma.user.findUnique({
-                        where: {
-                            email,
-                        },
-                    });
+                    const user = await getUserByEmail(email);
                     if (!user || !user.password) return null;
-                    /*const passwordsMatch = await bcrypt.compare(password, user.password);
+                    const passwordsMatch = await bcrypt.compare(password, user.password);
 
-                    if (passwordsMatch) return user;*/
-                    return user;
+                    if (passwordsMatch) return user;
                 }
 
                 return null;

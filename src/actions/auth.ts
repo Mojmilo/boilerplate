@@ -1,30 +1,13 @@
 'use server';
 
-import {LoginSchema, registerSchema, RegisterSchema} from "@/lib/definitions";
-import bcrypt from "bcrypt";
+import {LoginSchema, registerSchema, RegisterSchema} from "@/schemas/auth";
+import bcrypt from "bcryptjs";
 import prisma from "@/lib/db";
+import {generateVerificationToken} from "@/lib/tokens";
+import {sendVerificationEmail} from "@/lib/mail";
 import {signIn, signOut} from "@/auth";
 import {AuthError} from "next-auth";
 import {Prisma} from ".prisma/client";
-
-/*export async function authenticate(
-    prevState: string | undefined,
-    formData: FormData,
-) {
-    try {
-        await signIn('credentials', formData);
-    } catch (error) {
-        if (error instanceof AuthError) {
-            switch (error.type) {
-                case 'CredentialsSignin':
-                    return 'Invalid credentials.';
-                default:
-                    return 'Something went wrong.';
-            }
-        }
-        throw error;
-    }
-}*/
 
 export async function authenticate(
     values: LoginSchema,
@@ -77,6 +60,11 @@ export async function register(values: RegisterSchema) {
             });
 
             if (!user) return 'Something went wrong.';
+
+            if (user.email) {
+                const verificationToken = await generateVerificationToken(user.email);
+                await sendVerificationEmail(verificationToken.email, verificationToken.token);
+            }
 
             await signIn('credentials', values);
         } catch (error) {

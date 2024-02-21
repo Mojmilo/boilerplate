@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export default function Page() {
   return (
-      <Card className={'w-[450px]'}>
+      <Card className={'w-full sm:w-[450px]'}>
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl">Sign in to your account</CardTitle>
           <CardDescription>
@@ -31,7 +31,7 @@ export default function Page() {
         </CardContent>
         <CardFooter>
           <div className="flex flex-row justify-center items-center w-full">
-            <Link href="/register">
+            <Link href="/auth/register">
               <Button variant="link" className="h-0 px-0 py-0 text-sm text-muted-foreground font-light">
                 You don&apos;t have an account?
               </Button>
