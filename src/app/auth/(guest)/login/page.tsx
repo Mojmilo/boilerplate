@@ -1,5 +1,5 @@
 import LoginForm from "@/components/forms/login-form";
-import OAuthForm from "@/components/forms/o-auth-form";
+import OAuthForm from "@/components/forms/o-auth/o-auth-form";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import {Label} from "@/components/ui/label";
