@@ -1,10 +1,7 @@
 import {NextAuthConfig} from "next-auth";
 import GithubProvider from "next-auth/providers/github";
-import CredentialsProvider from "next-auth/providers/credentials";
-import {loginSchema} from "@/schemas/auth";
-import prisma from "@/lib/db";
-import bcrypt from "bcryptjs";
-import {getUserByEmail} from "@/data/user";
+import EmailProvider from "next-auth/providers/email";
+import { sendVerificationRequest } from "@/lib/mail";
 
 const githubId = process.env.GITHUB_ID;
 const githubSecret = process.env.GITHUB_SECRET;
@@ -14,32 +11,13 @@ if (!githubId || !githubSecret) {
 }
 
 export default {
-    providers: [
-        GithubProvider({
-            clientId: githubId,
-            clientSecret: githubSecret,
-        }),
-        CredentialsProvider({
-            credentials: {
-                email: { label: "Email", type: "email" },
-                password: { label: "Password", type: "password" },
-            },
-            async authorize(credentials, req) {
-                const parsedCredentials = loginSchema.safeParse(credentials);
-
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-
-                if (parsedCredentials.success) {
-                    const { email, password } = parsedCredentials.data;
-                    const user = await getUserByEmail(email);
-                    if (!user || !user.password) return null;
-                    const passwordsMatch = await bcrypt.compare(password, user.password);
-
-                    if (passwordsMatch) return user;
-                }
-
-                return null;
-            }
-        }),
-    ],
+  providers: [
+    GithubProvider({
+      clientId: githubId,
+      clientSecret: githubSecret,
+    }),
+    EmailProvider({
+      sendVerificationRequest,
+    }),
+  ],
 } satisfies NextAuthConfig;

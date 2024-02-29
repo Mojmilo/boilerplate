@@ -5,18 +5,18 @@ import {Icons} from "@/components/icons";
 import {authenticateGithub} from "@/actions/auth";
 
 export default function OAuthForm() {
-    return (
-        <div className="grid grid-cols-2 gap-6">
-            <Button variant="outline" onClick={async () => {
-                await authenticateGithub();
-            }}>
-                <Icons.gitHub className="mr-2 h-4 w-4" />
-                Github
-            </Button>
-            <Button variant="outline">
-                <Icons.google className="mr-2 h-4 w-4" />
-                Google
-            </Button>
-        </div>
-    )
+  return (
+    <div className="grid grid-cols-2 gap-6">
+      <Button variant="outline" onClick={async () => {
+          await authenticateGithub();
+      }}>
+        <Icons.gitHub className="mr-2 h-4 w-4" />
+        Github
+      </Button>
+      <Button variant="outline">
+        <Icons.google className="mr-2 h-4 w-4" />
+        Google
+      </Button>
+    </div>
+  )
 }
