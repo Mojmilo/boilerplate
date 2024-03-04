@@ -6,11 +6,11 @@ import {Input} from "@/components/ui/input";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {EmailSchema, emailSchema} from "@/schemas/auth";
-import { useTransition} from "react";
+import {useTransition} from "react";
 import {Icons} from "@/components/icons";
 import {authenticateEmail} from "@/actions/auth";
 
-export default function RegisterForm() {
+const LoginForm = () => {
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<EmailSchema>({
@@ -20,7 +20,7 @@ export default function RegisterForm() {
     },
   })
 
-  function onSubmit(values: EmailSchema) {
+  async function onSubmit(values: EmailSchema) {
     startTransition(async () => {
       const res = await authenticateEmail(values.email);
 
@@ -54,9 +54,11 @@ export default function RegisterForm() {
         />
         <Button disabled={isPending} className="w-full">
           {isPending && <Icons.spinner className="animate-spin w-5 h-5 mr-3" />}
-          Create account
+          Login
         </Button>
       </form>
     </Form>
   )
 }
+
+export default LoginForm;

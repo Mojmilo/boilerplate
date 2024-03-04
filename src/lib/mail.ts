@@ -4,7 +4,7 @@ import {EmailTemplate} from "@/components/emails/email-template";
 
 const resend = new Resend( process.env.RESEND_API_KEY! );
 
-export async function sendVerificationRequest(params: SendVerificationRequestParams) {
+const sendVerificationRequest = async (params: SendVerificationRequestParams) => {
   const { identifier, url, provider, theme} = params;
   const { host } = new URL(url);
 
@@ -19,3 +19,5 @@ export async function sendVerificationRequest(params: SendVerificationRequestPar
     console.log({ error });
   }
 }
+
+export { sendVerificationRequest };

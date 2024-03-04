@@ -5,7 +5,7 @@ import {Icons} from "@/components/icons";
 import {Button} from "@/components/ui/button";
 import {useState} from "react";
 
-export default function GithubButton() {
+const GithubButton = () => {
   const [loading, setLoading] = useState(false);
 
   return (
@@ -18,3 +18,5 @@ export default function GithubButton() {
     </Button>
   )
 }
+
+export default GithubButton;

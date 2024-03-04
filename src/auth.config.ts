@@ -7,7 +7,7 @@ const githubId = process.env.GITHUB_ID;
 const githubSecret = process.env.GITHUB_SECRET;
 
 if (!githubId || !githubSecret) {
-    throw new Error("GITHUB_ID and GITHUB_SECRET must be defined");
+  throw new Error("GITHUB_ID and GITHUB_SECRET must be defined");
 }
 
 export default {

@@ -1,7 +1,7 @@
-import RegisterForm from "@/components/forms/register-form";
-import OAuthForm from "@/components/forms/o-auth/o-auth-form";
+import RegisterForm from "@/components/forms/auth/register-form";
+import OAuthForm from "@/components/forms/auth/o-auth/o-auth-form";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
-import LoginForm from "@/components/forms/login-form";
+import LoginForm from "@/components/forms/auth/login-form";
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
 
