@@ -5,16 +5,18 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["auth", "public"]
 }
 
 model Account {
-  id                String  @id @default(cuid())
+  id                String  @id @default(uuid())
   userId            String
   type              String
   provider          String
@@ -30,24 +32,33 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@schema("auth")
 }
 
 model Session {
-  id           String   @id @default(cuid())
+  id           String   @id @default(uuid())
   sessionToken String   @unique
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@schema("auth")
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String          @id @default(uuid())
   name          String?
-  email         String?   @unique
+  email         String?         @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
+  profile       Profile?
+  address       Address[]
+  paymentMethod PaymentMethod[]
+  Subscription  Subscription[]
+
+  @@schema("auth")
 }
 
 model VerificationToken {
@@ -56,4 +67,141 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+  @@schema("auth")
+}
+
+model Profile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  about     String?
+  phone     String?
+  country   String?
+  street    String?
+  city      String?
+  state     String?
+  zip       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@schema("public")
+}
+
+model Currency {
+  id          String        @id @default(uuid())
+  name        String
+  code        String
+  symbol      String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  planPricing PlanPricing[]
+
+  @@schema("public")
+}
+
+enum PlanInterval {
+  MONTH
+  YEAR
+
+  @@schema("public")
+}
+
+enum PlanType {
+  FREE
+  BASIC
+  PREMIUM
+
+  @@schema("public")
+}
+
+model Plan {
+  id           String         @id @default(uuid())
+  name         String
+  interval     PlanInterval
+  type         PlanType
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  planPricing  PlanPricing[]
+  subscription Subscription[]
+
+  @@schema("public")
+}
+
+model PlanPricing {
+  currencyId String
+  planId     String
+  price      Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  currency   Currency @relation(fields: [currencyId], references: [id])
+  plan       Plan     @relation(fields: [planId], references: [id])
+
+  @@id([currencyId, planId])
+  @@schema("public")
+}
+
+enum SubscriptionStatus {
+  active
+  canceled
+  incomplete
+  incomplete_expired
+  trialing
+  unpaid
+  past_due
+
+  @@schema("public")
+}
+
+model Subscription {
+  id              String             @id @default(uuid())
+  userId          String
+  planId          String
+  paymentMethodId String
+  addressId       String
+  status          SubscriptionStatus
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  user            User               @relation(fields: [userId], references: [id])
+  plan            Plan               @relation(fields: [planId], references: [id])
+  payment         PaymentMethod      @relation(fields: [paymentMethodId], references: [id])
+  address         Address            @relation(fields: [addressId], references: [id])
+
+  @@schema("public")
+}
+
+model Address {
+  id           String         @id @default(uuid())
+  userId       String
+  name         String
+  phone        String
+  country      String
+  street       String
+  city         String
+  state        String
+  zip          String
+  isDefault    Boolean
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  user         User           @relation(fields: [userId], references: [id])
+  subscription Subscription[]
+
+  @@schema("public")
+}
+
+model PaymentMethod {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String
+  cardType  String
+  last4     String
+  expMonth  Int
+  expYear   Int
+  isDefault Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user         User           @relation(fields: [userId], references: [id])
+  subscription Subscription[]
+
+  @@schema("public")
 }

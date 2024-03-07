@@ -3,14 +3,14 @@
 import {
   DropdownMenu,
   DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator, DropdownMenuShortcut,
+  DropdownMenuLabel, DropdownMenuPortal,
+  DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {Avatar} from "@/components/ui/avatar";
 import Image from "next/image";
 import {logout} from "@/actions/auth";
-import {CreditCardIcon, DribbbleIcon, UserIcon, Settings02Icon, Logout01Icon} from "hugeicons-react";
+import {CreditCardIcon, DribbbleIcon, UserIcon, Settings02Icon, Logout01Icon, UserAdd01Icon, Mail01Icon} from "hugeicons-react";
 import {useSession} from "next-auth/react";
 import React from "react";
 import Link from "next/link";
@@ -69,6 +69,22 @@ const Navbar = () => {
                 <span>Settings</span>
                 <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
               </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuGroup>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <UserAdd01Icon className="mr-2 h-4 w-4" />
+                  <span>Invite users</span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuItem disabled>
+                      <Mail01Icon className="mr-2 h-4 w-4" />
+                      <span>Email</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
             </DropdownMenuGroup>
             <DropdownMenuSeparator/>
             <DropdownMenuGroup>
